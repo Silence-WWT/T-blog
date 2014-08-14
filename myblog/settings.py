@@ -69,7 +69,7 @@ DATABASES = {
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Asia/Shanghai'
 
 USE_I18N = True
 
@@ -91,3 +91,5 @@ TEMPLATE_DIRS = (
 MEDIA_ROOT = (
     os.path.join(BASE_DIR, 'upload'),
 )
+
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True

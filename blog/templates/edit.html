@@ -5,6 +5,15 @@
     <title></title>
 </head>
 <body>
-
+<form method="post">
+    {% csrf_token %}
+    <p>{{ blogform.title }}</p>
+    <p>
+        {{ blogform.content }}
+    </p>
+    <div>
+        <input type="submit" value="publish">
+    </div>
+</form>
 </body>
 </html>

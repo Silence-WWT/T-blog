@@ -5,6 +5,10 @@
     <title></title>
 </head>
 <body>
-
+    <h2><strong>{{ blog.title }}</strong></h2>
+    <h3>Author: {{ blog.author }}</h3>
+    <p>Created Time:{{ blog.created_time }} &nbsp; Modified Time:{{ blog.modified_time }}</p>
+    <p>{{ blog.content }}</p><br><br><br>
+    <a href="{% url 'blog:home'  %}">back home</a>
 </body>
 </html>

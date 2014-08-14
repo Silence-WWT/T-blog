@@ -3,11 +3,11 @@ from myblog.settings import MEDIA_ROOT
 
 
 class User(models.Model):
-    username = models.CharField(max_length=100)
+    username = models.CharField(max_length=100)  # 以后可以unique=True简化
     password = models.CharField(max_length=50)
     sex = models.CharField(max_length=10)
     head_show = models.FileField(upload_to=MEDIA_ROOT)
-    register_date = models.DateTimeField()
+    register_date = models.DateField()
     email = models.EmailField()
 
     def __str__(self):
@@ -17,8 +17,8 @@ class User(models.Model):
 class Blog(models.Model):
     title = models.CharField(max_length=100)
     author = models.ForeignKey(User)
-    created_time = models.DateTimeField()
-    modified_time = models.DateTimeField()
+    created_time = models.CharField(max_length=25)
+    modified_time = models.CharField(max_length=25)
     content = models.TextField()
 
     def __str__(self):

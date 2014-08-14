@@ -2,9 +2,17 @@
 <html>
 <head lang="en">
     <meta charset="UTF-8">
-    <title></title>
+    <title>Login</title>
 </head>
 <body>
-
+{% if error_message %}
+    <p><strong>{{ error_message }}</strong></p>
+{% endif %}
+<form method="post">
+    {% csrf_token %}
+    <p>{{ loginform.username }}</p>
+    <p>{{ loginform.password }}</p>
+    <input type="submit" value="login">
+</form>
 </body>
 </html>
