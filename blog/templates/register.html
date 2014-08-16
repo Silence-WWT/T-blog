@@ -10,10 +10,10 @@
 {% endif %}
 <form method="post">
     {% csrf_token %}
-    <p>{{ registerform.username }}</p>
-    <p>{{ registerform.password }}</p>
-    <p>{{ registerform.confirm_password }}</p>
-    <p>{{ registerform.email }}</p>
+    <p>{{ register_form.username }}</p>
+    <p>{{ register_form.password }}</p>
+    <p>{{ register_form.confirm_password }}</p>
+    <p>{{ register_form.email }}</p>
     <input type="submit" value="register">
 </form>
 </body>

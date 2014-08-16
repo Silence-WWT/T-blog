@@ -3,4 +3,5 @@ migrations/
 __pycache__/
 upload/
 *.py~
+*.html~
 *.sqlite3

@@ -1,0 +1,23 @@
+{% extends 'base_blog.html' %}
+{% load bootstrap3 %}
+
+{% block title %} Blog {% endblock %}
+
+{% block nav_blog %} class="active" {% endblock %}
+
+{% block blog_list %}
+    <div class="text-right"><br><br>
+        <a href="{% url 'blog:edit' username %}" class="btn btn-primary btn-lg">{% bootstrap_icon "pencil" %} New blog</a>
+    </div>
+    {% for blog in blog_list %}
+        <div>
+            <h2 class="page-header">
+                <a href="{% url 'blog:view' username blog.id%}">
+                    {{ blog.title }}
+                </a>
+            </h2>
+            <p class="text-right text-muted"> {{ blog.created_time }} </p>
+            <p> {{ blog.content|linebreaksbr }} </p>
+        </div>
+    {% endfor %}
+{% endblock %}

@@ -1,14 +1,21 @@
-<!DOCTYPE html>
-<html>
-<head lang="en">
-    <meta charset="UTF-8">
-    <title></title>
-</head>
-<body>
-    <h2><strong>{{ blog.title }}</strong></h2>
-    <h3>Author: {{ blog.author }}</h3>
-    <p>Created Time:{{ blog.created_time }} &nbsp; Modified Time:{{ blog.modified_time }}</p>
-    <p>{{ blog.content }}</p><br><br><br>
-    <a href="{% url 'blog:home'  %}">back home</a>
-</body>
-</html>
+{% extends 'base_blog.html' %}
+{% load bootstrap3 %}
+
+{% block title %} {{ blog.title }} {% endblock %}
+
+{% block blog_list %}
+<div>
+    <h2 class="page-header"> {{ blog.title }} </h2>
+    <p class="text-right text-muted"> {{ blog.created_time }} </p>
+    <div class="popover-content">
+        <p class="lead">{{ blog.content|linebreaksbr }}</p><br>
+    </div>
+
+    <div class="text-right">
+        <div class="btn-group">
+            <a href="{% url 'blog:edit' username blog.id %}" class="btn btn-primary btn-lg" role="button">{% bootstrap_icon "edit" %} Edit</a>
+            <a href="{% url 'blog:blog' username %}" class="btn btn-primary btn-lg" role="button">{% bootstrap_icon "chevron-left" %} Back</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

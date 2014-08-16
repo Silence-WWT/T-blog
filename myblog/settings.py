@@ -36,8 +36,9 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'blog',
     'south',
+    'bootstrap3',
+    'blog',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -88,8 +89,12 @@ TEMPLATE_DIRS = (
     os.path.join(BASE_DIR, 'templates'),
 )
 
-MEDIA_ROOT = (
-    os.path.join(BASE_DIR, 'upload'),
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+STATIC_ROOT = os.path.join(BASE_DIR, 'blog/static')
+
+STATICFILES_DIRS = (
+    # os.path.join(BASE_DIR, 'blog/static'),
 )
 
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True

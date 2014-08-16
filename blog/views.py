@@ -30,7 +30,7 @@ def register(request):
                 rf.cleaned_data['password'] = ''
                 rf.cleaned_data['confirm_password'] = ''
                 error_message = ''.join(error_message)
-                return render_to_response('register.html', {'registerform': rf, 'error_message': error_message})
+                return render_to_response('register.html', {'register_form': rf, 'error_message': error_message})
             register_date = date.today()
             User.objects.create(username=username, password=password, email=email, register_date=register_date)
             request.session['username'] = username
@@ -41,7 +41,7 @@ def register(request):
             del request.session['username']
         except KeyError:
             pass
-    return render_to_response('register.html', {'registerform': rf})
+    return render_to_response('register.html', {'register_form': rf})
 
 
 @csrf_exempt
@@ -57,18 +57,18 @@ def login(request):
                 return HttpResponseRedirect('/%s/home/' % username)
             user = User.objects.select_related().filter(email__exact=username, password__exact=password)
             if user:
-                username = user.username
+                username = user[0].username
                 request.session['username'] = username
                 return HttpResponseRedirect('/%s/home/' % username)
             else:
                 error_message = 'Username or Password incorrect'
                 lf.cleaned_data['password'] = ''
-                return render_to_response('login.html', {'loginform': lf, 'error_message': error_message})
+                return render_to_response('login.html', {'login_form': lf, 'error_message': error_message})
     else:
         username = request.session.get('username', '')
         if not username or not User.objects.filter(username=username):
             lf = LoginForm()
-            return render_to_response('login.html', {'loginform': lf})
+            return render_to_response('login.html', {'login_form': lf})
         else:
             return HttpResponseRedirect('/%s/home/' % username)
 
@@ -81,20 +81,24 @@ def logout(request):
     return HttpResponse('logout')
 
 
-def home(request, username):
+def blog(request, username):
     user = get_object_or_404(User, username=username)
     if request.session.get('username', '') == username:
         user_self = True
     else:
         user_self = False
     blog_list = user.blog_set.select_related().all()
-    return render_to_response('home.html', {'blog_list': blog_list, 'username': username, 'user_self': user_self})
+    return render_to_response('blog.html', {'blog_list': blog_list, 'username': username, 'user_self': user_self})
+
+
+def home(request, username):
+    return render_to_response('home.html', {'username': username})
 
 
 def view(request, username, pid):
     user = get_object_or_404(User, username=username)
     blog = get_object_or_404(Blog, author=user, id=pid)
-    return render_to_response('view.html', {'blog': blog})
+    return render_to_response('view.html', {'username': username, 'blog': blog})
 
 
 @csrf_exempt
@@ -117,14 +121,16 @@ def edit(request, username, pid=''):
                 blog.modified_time = modified_time
                 blog.content = content
                 blog.save()
-                return HttpResponseRedirect('/%s/home/' % username)
+                return HttpResponseRedirect('/%s/view/%s' % (username, blog.id))
         else:
-            bf = BlogForm()
             if pid:
-                blog = Blog.objects.select_related().filter(id=pid)
-                bf.title = blog.title
-                bf.content = blog.content
-            return render_to_response('edit.html', {'blogform': bf})
+                blog = Blog.objects.filter(id=pid)
+                if not blog:
+                    return HttpResponse('no such blog!')
+                bf = BlogForm(initial={'title': blog[0].title, 'content': blog[0].content})
+            else:
+                bf = BlogForm()
+            return render_to_response('edit.html', {'blog_form': bf, 'username': username, 'blog_id': pid})
     else:
         return HttpResponseRedirect('/login/')
 
@@ -137,3 +143,7 @@ def comment(request):
 @csrf_exempt
 def upload(request):
     pass
+
+
+def test(request):
+    return render_to_response('test_bootstrap.html', {'form': BlogForm()})

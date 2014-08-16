@@ -1,19 +1,26 @@
-<!DOCTYPE html>
-<html>
-<head lang="en">
-    <meta charset="UTF-8">
-    <title></title>
-</head>
-<body>
-<form method="post">
+{% extends 'base.html' %}
+{% load bootstrap3 %}
+
+{% block title %} Edit {% endblock %}
+
+{% block nav_blog %} class="active" {% endblock %}
+
+{% block content %}
+    <br><br>
+<form class="form" method="post">
     {% csrf_token %}
-    <p>{{ blogform.title }}</p>
-    <p>
-        {{ blogform.content }}
-    </p>
-    <div>
-        <input type="submit" value="publish">
-    </div>
+    {% bootstrap_form blog_form %}
+    {% buttons %}
+        <div class="text-right">
+            <div class="btn-group">
+                <button type="submit" class="btn btn-primary btn-lg">{% bootstrap_icon "share" %} Publish</button>
+                {% if blog_id %}
+                    <a href="{% url 'blog:view' username blog_id %}" class="btn btn-primary btn-lg" role="button">{% bootstrap_icon "remove" %} Cancel</a>
+                {% else %}
+                    <a href="{% url 'blog:blog' username %}" class="btn btn-primary btn-lg" role="button">{% bootstrap_icon "remove" %} Cancel</a>
+                {% endif %}
+            </div>
+        </div>
+    {% endbuttons %}
 </form>
-</body>
-</html>
+{% endblock %}

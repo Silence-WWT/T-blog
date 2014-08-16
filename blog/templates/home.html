@@ -1,19 +1,14 @@
-<!DOCTYPE html>
-<html>
-<head lang="en">
-    <meta charset="UTF-8">
-    <title>home</title>
-</head>
-<body>
-    <div><h2>{{ username }}</h2></div>
-    <div>
-        {% for blog in blog_list.reverse %}
-        <div>
-            
-            <p><strong>{{ blog.title }}</strong> &nbsp;{{ blog.created_time }}</p>
-            <p>{{ blog.content }}</p>
-        </div><br>
-        {% endfor %}
+{% extends 'base.html' %}
+{% load staticfiles %}
+
+{% block title %} {{ username }} {% endblock %}
+
+{% block nav_home %} class="active" {% endblock %}
+
+{% block jumbotron %}
+<div class="jumbotron">
+    <div class="container">
+        <h1 class="text-center">Code Change The World.</h1><br>
     </div>
-</body>
-</html>
+</div>
+{% endblock %}

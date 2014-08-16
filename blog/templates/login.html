@@ -10,8 +10,8 @@
 {% endif %}
 <form method="post">
     {% csrf_token %}
-    <p>{{ loginform.username }}</p>
-    <p>{{ loginform.password }}</p>
+    <p>{{ login_form.username }}</p>
+    <p>{{ login_form.password }}</p>
     <input type="submit" value="login">
 </form>
 </body>
