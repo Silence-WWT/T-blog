@@ -7,19 +7,52 @@
 
 {% block blog_list %}
     {% if user_self %}
-    <div class="text-right"><br><br>
-        <a href="{% url 'blog:edit' username %}" class="btn btn-primary btn-lg">{% bootstrap_icon "plus" %} New blog</a>
-    </div>
+        <div class="row">
+            <div class="pull-right" style="padding-top: 80px;">
+                <a href="{% url 'blog:edit' username %}" class="btn btn-primary" role="button">{% bootstrap_icon "plus" %} New blog</a>
+            </div>
+        </div>
     {% endif %}
     {% for blog in blog_list %}
-        <div>
-            <h2 class="page-header">
-                <a href="{% url 'blog:view' username blog.pk%}">
-                    {{ blog.title }}
-                </a>
-            </h2>
-            <p class="text-right text-muted"> {{ blog.created_time }} </p>
-            <p> {{ blog.content|linebreaksbr }} </p>
-        </div><br><br><br>
+        <div class="row">
+            <div>
+                <h2>
+                    <a href="{% url 'blog:view' username blog.pk%}">
+                        {{ blog.title }}
+                    </a>
+                </h2>
+                <div class="hr"><hr/></div>
+                <p class="text-right text-muted"> {{ blog.created_time }} </p>
+                <p> {{ blog.content|linebreaksbr|truncatechars:"700" }} </p>
+            </div><br><br><br>
+        </div>
     {% endfor %}
+{% endblock %}
+
+{% block pagination %}
+    {% if pages != 1 %}
+        <div class="row">
+            <ul class="pagination pagination-lg pull-left">
+                {% if page != 1 %}
+                    <li><a href="{% url 'blog:blog' username last_page %}">&laquo;</a></li>
+                {% else %}
+                    <li class="disabled"><span>&laquo;</span></li>
+                {% endif %}
+
+                {% for i in range %}
+                    {% if i == page %}
+                        <li class="active"><span>{{ i }}<span class="sr-only">(current)</span></span></li>
+                    {% else %}
+                        <li><a href="{% url 'blog:blog' username i %}">{{ i }}</a></li>
+                    {% endif %}
+                {% endfor %}
+
+                {% if page != pages %}
+                    <li><a href="{% url 'blog:blog' username next_page %}">&raquo;</a></li>
+                {% else %}
+                    <li class="disabled"><span>&raquo;</span></li>
+                {% endif %}
+            </ul>
+        </div>
+    {% endif %}
 {% endblock %}

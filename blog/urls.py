@@ -7,8 +7,7 @@ urlpatterns = patterns('',
                        url(r'^logout/$', views.logout, name='logout'),
 
                        url(r'^(\w+?)/home/$', views.home, name='home'),
-                       url(r'^(\w+?)/blog/$', views.blog, name='blog'),
+                       url(r'^(\w+?)/blog/(?:(\d+)/)?$', views.blog, name='blog'),
                        url(r'^(\w+?)/view/(\d+)/$', views.view, name='view'),
                        url(r'^(\w+?)/edit/(?:(\d+)/)?$', views.edit, name='edit'),
-                       url(r'^test/$', views.test, name='test')
                        )

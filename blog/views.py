@@ -81,28 +81,53 @@ def logout(request):
     return HttpResponse('logout')
 
 
-def blog(request, username):
+def blog(request, username, page=''):
     user = get_object_or_404(User, username=username)
     if request.session.get('username', '') == username:
         user_self = True
     else:
         user_self = False
-    blog_list = user.blog_set.select_related().all().order_by('created_time').reverse()
-    return render_to_response('blog.html', {'blog_list': blog_list, 'username': username, 'user_self': user_self})
+    blog_list = list(user.blog_set.all().order_by('created_time').reverse())
+    try:
+        page = int(page)
+    except TypeError:
+        page = 1
+    pages = int((len(blog_list) + 10 - 1) / 10)
+    if page > pages or page < 1:
+        return HttpResponseRedirect('/%s/blog/' % username)
+    if pages == 1:
+        return render_to_response('blog.html', {'blog_list': blog_list, 'username': username, 'user_self': user_self,
+                                                'pages': pages})
+    else:
+        return render_to_response('blog.html', {'blog_list': blog_list[(page-1)*10: page*10], 'username': username,
+                                                'user_self': user_self, 'pages': pages, 'page': page,
+                                                'last_page': page-1, 'next_page': page+1, 'range': range(1, pages+1)})
 
 
 def home(request, username):
+    get_object_or_404(User, username=username)
     return render_to_response('home.html', {'username': username})
 
 
 def view(request, username, pid):
     user = get_object_or_404(User, username=username)
     article = get_object_or_404(Blog, author=user, pk=pid)
+    article_list = list(Blog.objects.order_by('created_time').reverse())
+    index = article_list.index(article)
+    if index > 0:
+        next_article = article_list[index - 1]
+    else:
+        next_article = None
+    if index < len(article_list) - 1:
+        last_article = article_list[index + 1]
+    else:
+        last_article = None
     if request.session.get('username', '') == username:
         user_self = True
     else:
         user_self = False
-    return render_to_response('view.html', {'username': username, 'blog': article, 'user_self': user_self})
+    return render_to_response('view.html', {'username': username, 'blog': article, 'user_self': user_self,
+                                            'next': next_article, 'last': last_article})
 
 
 @csrf_exempt
@@ -117,11 +142,9 @@ def edit(request, username, pid=''):
                     return HttpResponseRedirect('/%s/blog' % username)
                 format_time = '%F %T'
                 user = User.objects.get(username=username)
-                print(bf.cleaned_data['delete'])
                 title = bf.cleaned_data['title']
                 content = bf.cleaned_data['content']
                 modified_time = datetime.now().strftime(format_time)
-                print(modified_time)
                 if not pid:
                     article = Blog.objects.create(author=user, created_time=modified_time)
                 else:
@@ -152,7 +175,3 @@ def comment(request):
 @csrf_exempt
 def upload(request):
     pass
-
-
-def test(request):
-    return render_to_response('test_bootstrap.html', {'form': BlogForm()})
