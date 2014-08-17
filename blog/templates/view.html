@@ -11,10 +11,12 @@
         <p class="lead">{{ blog.content|linebreaksbr }}</p><br>
     </div>
 
-    <div class="text-right">
+    <div class="pull-right">
         <div class="btn-group">
-            <a href="{% url 'blog:edit' username blog.id %}" class="btn btn-primary btn-lg" role="button">{% bootstrap_icon "edit" %} Edit</a>
-            <a href="{% url 'blog:blog' username %}" class="btn btn-primary btn-lg" role="button">{% bootstrap_icon "chevron-left" %} Back</a>
+            <a href="{% url 'blog:blog' username %}" class="btn btn-primary" role="button">{% bootstrap_icon "chevron-left" %} Back</a>
+            {% if user_self %}
+                <a href="{% url 'blog:edit' username blog.pk %}" class="btn btn-primary" role="button">{% bootstrap_icon "edit" %} Edit</a>
+            {% endif %}
         </div>
     </div>
 </div>

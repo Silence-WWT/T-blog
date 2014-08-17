@@ -87,7 +87,7 @@ def blog(request, username):
         user_self = True
     else:
         user_self = False
-    blog_list = user.blog_set.select_related().all()
+    blog_list = user.blog_set.select_related().all().order_by('created_time').reverse()
     return render_to_response('blog.html', {'blog_list': blog_list, 'username': username, 'user_self': user_self})
 
 
@@ -97,8 +97,12 @@ def home(request, username):
 
 def view(request, username, pid):
     user = get_object_or_404(User, username=username)
-    blog = get_object_or_404(Blog, author=user, id=pid)
-    return render_to_response('view.html', {'username': username, 'blog': blog})
+    article = get_object_or_404(Blog, author=user, pk=pid)
+    if request.session.get('username', '') == username:
+        user_self = True
+    else:
+        user_self = False
+    return render_to_response('view.html', {'username': username, 'blog': article, 'user_self': user_self})
 
 
 @csrf_exempt
@@ -107,27 +111,32 @@ def edit(request, username, pid=''):
         if request.method == 'POST':
             bf = BlogForm(request.POST)
             if bf.is_valid():
+                if bf.cleaned_data['delete'] is True:
+                    if pid:
+                        Blog.objects.get(pk=pid).delete()
+                    return HttpResponseRedirect('/%s/blog' % username)
                 format_time = '%F %T'
                 user = User.objects.get(username=username)
+                print(bf.cleaned_data['delete'])
                 title = bf.cleaned_data['title']
                 content = bf.cleaned_data['content']
                 modified_time = datetime.now().strftime(format_time)
                 print(modified_time)
                 if not pid:
-                    blog = Blog.objects.create(author=user, created_time=modified_time)
+                    article = Blog.objects.create(author=user, created_time=modified_time)
                 else:
-                    blog = get_object_or_404(Blog, id=pid)
-                blog.title = title
-                blog.modified_time = modified_time
-                blog.content = content
-                blog.save()
-                return HttpResponseRedirect('/%s/view/%s' % (username, blog.id))
+                    article = get_object_or_404(Blog, pk=pid)
+                article.title = title
+                article.modified_time = modified_time
+                article.content = content
+                article.save()
+                return HttpResponseRedirect('/%s/view/%s' % (username, article.pk))
         else:
             if pid:
-                blog = Blog.objects.filter(id=pid)
+                article = Blog.objects.filter(pk=pid)
                 if not blog:
                     return HttpResponse('no such blog!')
-                bf = BlogForm(initial={'title': blog[0].title, 'content': blog[0].content})
+                bf = BlogForm(initial={'title': article[0].title, 'content': article[0].content})
             else:
                 bf = BlogForm()
             return render_to_response('edit.html', {'blog_form': bf, 'username': username, 'blog_id': pid})

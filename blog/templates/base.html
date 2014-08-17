@@ -8,11 +8,9 @@
 
     {% load bootstrap3 %}
     <link href="{% bootstrap_css_url %}" rel="stylesheet">
-    <script src="{% bootstrap_jquery_url %}"></script>
-    <script src="{% bootstrap_javascript_url %}"></script>
     <style type='text/css'>
         body {
-            background-color: #CCC;
+            background-color: #dddddd;
             padding-top: 50px;
         }
     </style>
@@ -27,17 +25,17 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                <a class="navbar-brand" href="#">Silence</a>
+                <a class="navbar-brand" href="#">{{ username }}</a>
             </div>
             <div class="collapse navbar-collapse">
                 <ul class="nav navbar-nav">
                     <li {% block nav_home %} {% endblock %}><a href="{% url 'blog:home' username %}">Home</a></li>
                     <li {% block nav_blog %} {% endblock %}><a href="{% url 'blog:blog' username %}">Blog</a></li>
                     <li {% block nav_photo %} {% endblock %}><a href="#">Photos</a></li>
-                    <li {% block nav_me %} {% endblock %}><a href="#">About Me</a></li>
+                    <li {% block nav_me %} {% endblock %}><a href="#">About</a></li>
                 </ul>
                 <div class="navbar-right">
-                    <p class="navbar-text">Show Me The Code, Change The World.</p>
+                    <p class="navbar-text">Show me the Code, Change the World.</p>
                 </div>
             </div><!--/.nav-collapse -->
         </div>
@@ -50,11 +48,16 @@
         {% block content %}{% endblock %}
     </div>
 
+    <br><br><br><br><hr>
     <div class="footer">
         <div class="container">
             <p class="text-muted text-center">Copyright Silence, 2014. All right reserved.</p>
+            <p class="text-center"><a href="#">{% bootstrap_icon "arrow-up" %}Back to top</a></p>
         </div>
     </div>
 
+    {% block script %}{% endblock %}
+    <script src="{% bootstrap_jquery_url %}"></script>
+    <script src="{% bootstrap_javascript_url %}"></script>
 </body>
 </html>

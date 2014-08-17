@@ -6,18 +6,20 @@
 {% block nav_blog %} class="active" {% endblock %}
 
 {% block blog_list %}
+    {% if user_self %}
     <div class="text-right"><br><br>
-        <a href="{% url 'blog:edit' username %}" class="btn btn-primary btn-lg">{% bootstrap_icon "pencil" %} New blog</a>
+        <a href="{% url 'blog:edit' username %}" class="btn btn-primary btn-lg">{% bootstrap_icon "plus" %} New blog</a>
     </div>
+    {% endif %}
     {% for blog in blog_list %}
         <div>
             <h2 class="page-header">
-                <a href="{% url 'blog:view' username blog.id%}">
+                <a href="{% url 'blog:view' username blog.pk%}">
                     {{ blog.title }}
                 </a>
             </h2>
             <p class="text-right text-muted"> {{ blog.created_time }} </p>
             <p> {{ blog.content|linebreaksbr }} </p>
-        </div>
+        </div><br><br><br>
     {% endfor %}
 {% endblock %}

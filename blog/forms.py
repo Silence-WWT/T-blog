@@ -16,3 +16,4 @@ class LoginForm(forms.Form):
 class BlogForm(forms.Form):
     title = forms.CharField(widget=forms.TextInput(attrs={'placeholder': 'Title', 'size': '50'}))
     content = forms.CharField(widget=forms.Textarea(attrs={'placeholder': 'Content'}))
+    delete = forms.BooleanField(required=False, initial=False, widget=forms.HiddenInput)
