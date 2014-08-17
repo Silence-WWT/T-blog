@@ -5,19 +5,37 @@
 
 {% block blog_list %}
 <div>
-    <h2 class="page-header"> {{ blog.title }} </h2>
+    <h2> {{ blog.title }} </h2>
+    <div class="hr"><hr/></div>
     <p class="text-right text-muted"> {{ blog.created_time }} </p>
     <div class="popover-content">
-        <p class="lead">{{ blog.content|linebreaksbr }}</p><br>
+        <p>{{ blog.content|linebreaksbr }}</p><br>
     </div>
 
-    <div class="pull-right">
-        <div class="btn-group">
-            <a href="{% url 'blog:blog' username %}" class="btn btn-primary" role="button">{% bootstrap_icon "chevron-left" %} Back</a>
-            {% if user_self %}
-                <a href="{% url 'blog:edit' username blog.pk %}" class="btn btn-primary" role="button">{% bootstrap_icon "edit" %} Edit</a>
-            {% endif %}
+    <div class="row"><br><br></div>
+
+    <div class="row">
+        <div class="pull-right">
+            <div class="btn-group">
+                <a href="{% url 'blog:blog' username %}" class="btn btn-primary" role="button">{% bootstrap_icon "chevron-left" %} Back</a>
+                {% if user_self %}
+                    <a href="{% url 'blog:edit' username blog.pk %}" class="btn btn-primary" role="button">{% bootstrap_icon "edit" %} Edit</a>
+                {% endif %}
+            </div>
         </div>
+    </div><br><br>
+
+    <div class="row">
+        {% if last %}
+            <a class="pull-left" href="{% url 'blog:view' username last.pk %}">{% bootstrap_icon "chevron-left" %} {{ last.title }}</a>
+        {% else %}
+            <p class="text-muted pull-left">{% bootstrap_icon "chevron-left" %} 已是第一篇</p>
+        {% endif %}
+        {% if next %}
+            <a class="pull-right" href="{% url "blog:view" username next.pk %}">{{ next.title }} {% bootstrap_icon "chevron-right" %}</a>
+        {% else %}
+            <p class="text-muted pull-right">已是最后一篇 {% bootstrap_icon "chevron-right" %}</p>
+        {% endif %}
     </div>
 </div>
 {% endblock %}

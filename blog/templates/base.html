@@ -10,8 +10,21 @@
     <link href="{% bootstrap_css_url %}" rel="stylesheet">
     <style type='text/css'>
         body {
-            background-color: #dddddd;
+            background-color: #eeeeee;
             padding-top: 50px;
+        }
+        hr{
+            background-color: #aaaaaa;
+            height: 1px;
+            border: 1px;
+            line-height: 1px;
+        }
+        h2{
+            line-height: 10px;
+            padding-top: 27px;
+        }
+        h3{
+            padding-top: 20px;
         }
     </style>
 </head>
@@ -48,11 +61,12 @@
         {% block content %}{% endblock %}
     </div>
 
-    <br><br><br><br><hr>
+    <br><br><br><br>
+    <div class="hr"><hr/></div>
     <div class="footer">
         <div class="container">
-            <p class="text-muted text-center">Copyright Silence, 2014. All right reserved.</p>
             <p class="text-center"><a href="#">{% bootstrap_icon "arrow-up" %}Back to top</a></p>
+            <p class="text-muted text-center">Copyright ©2014 All rights reserved. Powered by Silence.</p>
         </div>
     </div>
 

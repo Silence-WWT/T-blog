@@ -6,7 +6,7 @@
 {% block nav_blog %} class="active" {% endblock %}
 
 {% block content %}
-    <br><br>
+    <br>
 <form id="blog_form" class="form" method="post">
     {% csrf_token %}
     {% bootstrap_form blog_form %}
@@ -20,8 +20,6 @@
                 {% else %}
                     <a href="{% url 'blog:blog' username %}" class="btn btn-primary" role="button">{% bootstrap_icon "remove" %} Cancel</a>
                 {% endif %}
-
-{#                <a href="{% url 'blog:blog' username %}" class="btn btn-primary" role="button" onclick="blog_del()">{% bootstrap_icon "trash" %} Delete</a>#}
             </div>
         </div>
     {% endbuttons %}
