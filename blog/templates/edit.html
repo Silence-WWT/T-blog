@@ -8,30 +8,30 @@
 {% block content %}
     <br>
 <form id="blog_form" class="form" method="post">
-    {% csrf_token %}
-    {% bootstrap_form blog_form %}
-    {% buttons %}
-        <div class="pull-right">
-            <div class="btn-group">
-                <button type="submit" class="btn btn-primary">{% bootstrap_icon "ok" %} Publish</button>
-                {% if blog_id %}
-                    <a href="{% url 'blog:view' username blog_id %}" class="btn btn-primary" role="button">{% bootstrap_icon "remove" %} Cancel</a>
-                    <button type="button" class="btn btn-primary" onclick="blog_del();">{% bootstrap_icon "trash" %} Delete</button>
-                {% else %}
-                    <a href="{% url 'blog:blog' username %}" class="btn btn-primary" role="button">{% bootstrap_icon "remove" %} Cancel</a>
-                {% endif %}
-            </div>
-        </div>
-    {% endbuttons %}
+  {% csrf_token %}
+  {% bootstrap_form blog_form %}
+  {% buttons %}
+    <div class="pull-right">
+      <div class="btn-group">
+        <button type="submit" class="btn btn-primary">{% bootstrap_icon "ok" %} Publish</button>
+        {% if blog_id %}
+          <a href="{% url 'blog:view' username blog_id %}" class="btn btn-primary" role="button">{% bootstrap_icon "remove" %} Cancel</a>
+          <button type="button" class="btn btn-primary" onclick="blog_del();">{% bootstrap_icon "trash" %} Delete</button>
+        {% else %}
+          <a href="{% url 'blog:blog' username %}" class="btn btn-primary" role="button">{% bootstrap_icon "remove" %} Cancel</a>
+        {% endif %}
+      </div>
+    </div>
+  {% endbuttons %}
 </form>
 {% endblock %}
 
 {% block script %}
 <script type="text/javascript">
-    function blog_del(){
-        var form = document.getElementById('blog_form');
-        form.delete.value = true;
-        form.submit();
+  function blog_del(){
+    var form = document.getElementById('blog_form');
+    form.delete.value = true;
+    form.submit();
     }
 </script>
 {% endblock %}

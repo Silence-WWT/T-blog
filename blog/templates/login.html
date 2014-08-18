@@ -1,18 +1,18 @@
 <!DOCTYPE html>
 <html>
 <head lang="en">
-    <meta charset="UTF-8">
-    <title>Login</title>
+  <meta charset="UTF-8">
+  <title>Login</title>
 </head>
 <body>
 {% if error_message %}
-    <p><strong>{{ error_message }}</strong></p>
+  <p><strong>{{ error_message }}</strong></p>
 {% endif %}
 <form method="post">
-    {% csrf_token %}
-    <p>{{ login_form.username }}</p>
-    <p>{{ login_form.password }}</p>
-    <input type="submit" value="login">
+  {% csrf_token %}
+  <p>{{ login_form.username }}</p>
+  <p>{{ login_form.password }}</p>
+  <input type="submit" value="login">
 </form>
 </body>
 </html>
