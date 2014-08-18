@@ -7,19 +7,29 @@ class User(models.Model):
     password = models.CharField(max_length=50)
     sex = models.CharField(max_length=10)
     head_show = models.FileField(upload_to=MEDIA_ROOT)
-    register_date = models.DateField()
+    register_date = models.DateTimeField(auto_now_add=True)
     email = models.EmailField()
 
     def __str__(self):
         return self.username
 
 
+class Tag(models.Model):
+    tag_name = models.CharField(max_length=20)
+
+
+class BlogMonth(models.Model):
+    month = models.DateTimeField()
+
+
 class Blog(models.Model):
     title = models.CharField(max_length=100)
     author = models.ForeignKey(User)
-    created_time = models.CharField(max_length=25)
-    modified_time = models.CharField(max_length=25)
+    created_time = models.DateTimeField(auto_now_add=True)
+    modified_time = models.DateTimeField(auto_now=True)
     content = models.TextField()
+    month = models.ForeignKey(BlogMonth, null=True, blank=True)
+    tag = models.ManyToManyField(Tag)
 
     def __str__(self):
         return self.title

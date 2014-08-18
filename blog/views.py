@@ -1,7 +1,7 @@
 from django.shortcuts import render_to_response, get_object_or_404
 from django.http import HttpResponse, HttpResponseRedirect
 from django.views.decorators.csrf import csrf_exempt
-from datetime import date, datetime
+from datetime import datetime
 from blog.models import *
 from blog.forms import *
 
@@ -31,8 +31,7 @@ def register(request):
                 rf.cleaned_data['confirm_password'] = ''
                 error_message = ''.join(error_message)
                 return render_to_response('register.html', {'register_form': rf, 'error_message': error_message})
-            register_date = date.today()
-            User.objects.create(username=username, password=password, email=email, register_date=register_date)
+            User.objects.create(username=username, password=password, email=email)
             request.session['username'] = username
             return HttpResponse('ok')
     else:
@@ -93,6 +92,9 @@ def blog(request, username, page=''):
     except TypeError:
         page = 1
     pages = int((len(blog_list) + 10 - 1) / 10)
+    if pages == 0:
+        return render_to_response('blog.html', {'blog_list': blog_list, 'username': username, 'user_self': user_self,
+                                                'pages': pages})
     if page > pages or page < 1:
         return HttpResponseRedirect('/%s/blog/' % username)
     if pages == 1:
@@ -140,17 +142,22 @@ def edit(request, username, pid=''):
                     if pid:
                         Blog.objects.get(pk=pid).delete()
                     return HttpResponseRedirect('/%s/blog' % username)
-                format_time = '%F %T'
                 user = User.objects.get(username=username)
                 title = bf.cleaned_data['title']
                 content = bf.cleaned_data['content']
-                modified_time = datetime.now().strftime(format_time)
                 if not pid:
-                    article = Blog.objects.create(author=user, created_time=modified_time)
+                    article = Blog.objects.create(author=user)
+                    created_time = datetime.now()
+                    created_time = datetime(created_time.year, created_time.month, 1)
+                    blog_month = BlogMonth.objects.filter(month__exact=created_time)
+                    if not blog_month:
+                        month = BlogMonth.objects.create(month=created_time)
+                        article.month = month
+                    else:
+                        article.month = blog_month[0]
                 else:
                     article = get_object_or_404(Blog, pk=pid)
                 article.title = title
-                article.modified_time = modified_time
                 article.content = content
                 article.save()
                 return HttpResponseRedirect('/%s/view/%s' % (username, article.pk))

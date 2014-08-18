@@ -76,7 +76,7 @@ USE_I18N = True
 
 USE_L10N = True
 
-USE_TZ = True
+USE_TZ = False
 
 
 # Static files (CSS, JavaScript, Images)
@@ -92,9 +92,5 @@ TEMPLATE_DIRS = (
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 STATIC_ROOT = os.path.join(BASE_DIR, 'blog/static')
-
-STATICFILES_DIRS = (
-    # os.path.join(BASE_DIR, 'blog/static'),
-)
 
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True

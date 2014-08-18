@@ -22,7 +22,7 @@
                     </a>
                 </h2>
                 <div class="hr"><hr/></div>
-                <p class="text-right text-muted"> {{ blog.created_time }} </p>
+                <p class="text-right text-muted"> {{ blog.created_time|date:"M. j, Y, H:i:s" }} </p>
                 <p> {{ blog.content|linebreaksbr|truncatechars:"700" }} </p>
             </div><br><br><br>
         </div>
@@ -30,7 +30,7 @@
 {% endblock %}
 
 {% block pagination %}
-    {% if pages != 1 %}
+    {% if pages > 1 %}
         <div class="row">
             <ul class="pagination pagination-lg pull-left">
                 {% if page != 1 %}

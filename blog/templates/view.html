@@ -7,7 +7,7 @@
 <div>
     <h2> {{ blog.title }} </h2>
     <div class="hr"><hr/></div>
-    <p class="text-right text-muted"> {{ blog.created_time }} </p>
+    <p class="text-right text-muted"> {{ blog.created_time|date:"M. j, Y, H:i:s" }} </p>
     <div class="popover-content">
         <p>{{ blog.content|linebreaksbr }}</p><br>
     </div>
