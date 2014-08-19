@@ -7,22 +7,45 @@
   {% load bootstrap3 %}
   <link href="{% bootstrap_css_url %}" rel="stylesheet">
   <style type='text/css'>
+    html {
+      position: relative;
+      min-height: 100%;
+    }
     body {
-      background-color: #eeeeee;
       padding-top: 50px;
     }
-    hr{
-      background-color: #aaaaaa;
-      height: 1px;
-      border: 1px;
-      line-height: 1px;
+    .jumbotron {
+      background-color: #ffffff;
     }
-    h2{
-      line-height: 10px;
-      padding-top: 27px;
+    .footer {
+      position: absolute;
+      bottom: 0;
+      width: 100%;
     }
-    h3{
-      padding-top: 20px;
+    .footer > hr {
+      background-color: #dddddd;
+      color: #dddddd;
+    }
+    .panel-default {
+      padding-top: 30px;
+      border-color: #ffffff;
+    }
+    .panel-default > .panel-heading {
+      background-color: #ffffff;
+      border-bottom-color: #aaaaaa;
+    }
+    .panel-default > .panel-heading > h3 {
+      padding-top: 0;
+      line-height: 0;
+      color: #428bca;
+    }
+    .list-group > p, .list-group > a {
+      border-color: #ffffff;
+    }
+    .page-header {
+      padding-top: 0;
+      color: #428bca;
+      border-bottom-color: #aaaaaa;
     }
   </style>
 </head>
@@ -63,8 +86,8 @@
 </div>
 <br><br><br><br>
 
-<div class="hr"><hr/></div>
 <div class="footer">
+  <hr>
   <div class="container">
     <p class="text-center"><a href="#">{% bootstrap_icon "arrow-up" %}Back to top</a></p>
     <p class="text-muted text-center">Copyright ©2014 All rights reserved. Powered by Silence.</p>
