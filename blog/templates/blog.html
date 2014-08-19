@@ -6,15 +6,15 @@
 {% block nav_blog %} class="active" {% endblock %}
 
 {% block blog_list %}
-  {% if user_self %}
+
+  {% if user_self and not archive_month and not category_tag %}
     <div class="row">
-      {% if not archive_month %}
         <div class="pull-right" style="padding-top: 43px;">
           <a href="{% url 'blog:edit' username %}" class="btn btn-primary" role="button">{% bootstrap_icon "plus" %} New blog</a>
         </div>
-      {% endif %}
     </div>
   {% endif %}
+
   {% for blog in blog_list %}
     <div class="row">
       <div>
@@ -23,14 +23,35 @@
             {{ blog.title }}
           </a>
         </h2>
-        <p class="text-right text-muted"> {{ blog.created_time|date:"M. j, Y, H:i:s" }} </p>
+
+        <div class="row" style="padding-top: 5px;padding-bottom: 10px">
+          <div class="col-md-9">
+            <div class="text-left">
+              {% for tag in blog.tag.all %}
+                {% if tag.tag_name %}
+                  <a href="{% url 'blog:category' username tag.tag_name %}" class="btn btn-sm btn-default">{{ tag.tag_name }}</a>
+                {% endif %}
+              {% endfor %}
+            </div>
+          </div>
+
+          <div class="col-md-3">
+            <div class="text-right">
+              <p class="text-muted"> {{ blog.created_time|date:"M. j, Y, H:i:s" }} </p>
+            </div>
+          </div>
+        </div>
+
         <p> {{ blog.content|linebreaksbr|truncatechars:"700" }} </p>
-      </div><br><br><br>
+      </div><br><br>
+
     </div>
   {% endfor %}
+
 {% endblock %}
 
 {% block pagination %}
+
   {% if pages > 1 %}
     <div class="row">
       <ul class="pagination pagination-lg pull-left">
@@ -56,4 +77,5 @@
       </ul>
     </div>
   {% endif %}
+
 {% endblock %}

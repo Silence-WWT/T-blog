@@ -11,4 +11,5 @@ urlpatterns = patterns('',
                        url(r'^(\w+?)/view/(\d+)/$', views.view, name='view'),
                        url(r'^(\w+?)/edit/(?:(\d+)/)?$', views.edit, name='edit'),
                        url(r'^(\w+?)/archive/(\d{4}-\d{2})/(?:(\d+)/)?$', views.archive, name='archive'),
+                       url(r'^(\w+?)/category/(\w+?)/(?:(\d+)/)?$', views.category, name='category'),
                        )

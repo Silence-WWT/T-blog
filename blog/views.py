@@ -1,9 +1,11 @@
-from django.shortcuts import render_to_response, get_object_or_404, render
-from django.http import HttpResponse, HttpResponseRedirect
+from django.shortcuts import render_to_response, get_object_or_404
+from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.views.decorators.csrf import csrf_exempt
+from django.core.exceptions import ObjectDoesNotExist
 from datetime import datetime
 from blog.models import *
 from blog.forms import *
+import re
 
 
 @csrf_exempt
@@ -89,8 +91,10 @@ def blog(request, username, page=''):
 def archive(request, username, time, page=''):
     user = get_object_or_404(User, username=username)
     archive_time = datetime(int(time[:4]), int(time[5:]), 1)
-    archive_month = get_object_or_404(BlogMonth, month__exact=archive_time, user__exact=user)
+    archive_month = get_object_or_404(BlogMonth, month=archive_time, user=user)
     blog_list = list(archive_month.blog_set.all().order_by('created_time').reverse())
+    if not blog_list:
+        return Http404
     archive_month = archive_month.month.strftime('%Y-%m')
     return pageinate(request, username, blog_list, page, archive_month)
 
@@ -103,7 +107,25 @@ def get_archive_dict_list(user):
     return archive_dict_list
 
 
-def pageinate(request, username, blog_list, page, archive_month=None):
+def category(request, username, tag, page=''):
+    user = get_object_or_404(User, username=username)
+    category_tag = get_object_or_404(Tag, tag_name=tag, user=user)
+    blog_list = list(category_tag.blog_set.all())
+    if not blog_list:
+        return Http404
+    return pageinate(request, username, blog_list, page, category_tag=category_tag.tag_name)
+
+
+def get_category_dict_list(user):
+    category_list = list(user.tag_set.all())
+    category_dict_list = []
+    for tag in category_list:
+        if tag.blog_set.count():
+            category_dict_list.append({'category_name': tag.tag_name, 'num': tag.blog_set.count()})
+    return category_dict_list
+
+
+def pageinate(request, username, blog_list, page, archive_month=None, category_tag=None):
     user = User.objects.get(username=username)
     if request.session.get('username', '') == username:
         user_self = True
@@ -116,8 +138,14 @@ def pageinate(request, username, blog_list, page, archive_month=None):
     pages = int((len(blog_list) + 10 - 1) / 10)
     if page > pages or page < 1:
         return HttpResponseRedirect('/%s/blog/' % username)
+    try:
+        uncategorized_tag = get_object_or_404(Tag, tag_name='Uncategorized', user=user)
+    except ObjectDoesNotExist:
+        uncategorized_tag = None
     context = {'blog_list': blog_list, 'username': username, 'user_self': user_self, 'pages': pages,
-               'archive_dict_list': get_archive_dict_list(user), 'archive_month': archive_month}
+               'archive_dict_list': get_archive_dict_list(user), 'archive_month': archive_month,
+               'category_dict_list': get_category_dict_list(user), 'category_tag': category_tag,
+               'uncategorized_tag': uncategorized_tag}
     if pages > 1:
         context['blog_list'] = blog_list[(page-1)*10: page*10]
         context['page'] = page
@@ -149,8 +177,13 @@ def view(request, username, pid):
         user_self = True
     else:
         user_self = False
+    try:
+        uncategorized_tag = get_object_or_404(Tag, tag_name='Uncategorized', user=user)
+    except ObjectDoesNotExist:
+        uncategorized_tag = None
     context = {'username': username, 'blog': article, 'user_self': user_self, 'next': next_article,
-               'last': last_article, 'archive_dict_list': get_archive_dict_list(user)}
+               'last': last_article, 'archive_dict_list': get_archive_dict_list(user),
+               'category_dict_list': get_category_dict_list(user), 'uncategorized_tag': uncategorized_tag}
     return render_to_response('view.html', context)
 
 
@@ -179,16 +212,53 @@ def edit(request, username, pid=''):
                         article.month = blog_month[0]
                 else:
                     article = get_object_or_404(Blog, pk__exact=pid, author__exact=user)
+                tag = bf.cleaned_data['tag'].split(',')
+                tag_list = []
+                for item in tag:
+                    item = re.sub(' ', '', item.strip())
+                    if item:
+                        tag_list.append(item)
+                article_tag_list = list(article.tag.all())
+                prove_list = []
+                if tag_list:
+                    for item in tag_list:
+                        try:
+                            tag = Tag.objects.get(tag_name=item, user=user)
+                            if tag not in article.tag.all():
+                                article.tag.add(tag)
+                            else:
+                                prove_list.append(tag)
+                        except ObjectDoesNotExist:
+                            tag = Tag.objects.create(tag_name=item, user=user)
+                            article.tag.add(tag)
+                for tag in article_tag_list:
+                    if tag not in prove_list:
+                        article.tag.remove(tag)
+                if not article.tag.count():
+                    try:
+                        tag = Tag.objects.get(tag_name='Uncategorized', user=user)
+                    except ObjectDoesNotExist:
+                        tag = Tag.objects.create(tag_name='Uncategorized', user=user)
+                    article.tag.add(tag)
                 article.title = title
                 article.content = content
                 article.save()
                 return HttpResponseRedirect('/%s/view/%s' % (username, article.pk))
         else:
             if pid:
-                article = Blog.objects.filter(pk__exact=pid, author__exact=user)
-                if not blog:
-                    return HttpResponse('no such blog!')
-                bf = BlogForm(initial={'title': article[0].title, 'content': article[0].content})
+                try:
+                    article = Blog.objects.get(pk=pid, author=user)
+                except ObjectDoesNotExist:
+                    return Http404
+                init_dict = {'title': article.title, 'content': article.content}
+                tag = article.tag.all()
+                if tag:
+                    tag_list = []
+                    for item in tag:
+                        tag_list.append(item.tag_name + ', ')
+                    tag_str = ''.join(tag_list)
+                    init_dict['tag'] = tag_str
+                bf = BlogForm(initial=init_dict)
             else:
                 bf = BlogForm()
             return render_to_response('edit.html', {'blog_form': bf, 'username': username, 'blog_id': pid})

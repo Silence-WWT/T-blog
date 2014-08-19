@@ -22,7 +22,7 @@
       bottom: 0;
       width: 100%;
     }
-    .footer > hr {
+    .footer > .hr {
       background-color: #dddddd;
       color: #dddddd;
     }
@@ -43,9 +43,15 @@
       border-color: #ffffff;
     }
     .page-header {
-      padding-top: 0;
+      margin-top: 30px;
+      margin-bottom: 10px;
+      padding-top: 10px;
       color: #428bca;
       border-bottom-color: #aaaaaa;
+    }
+    .btn-default {
+      border-color: #428bca;
+      color: #428bca;
     }
   </style>
 </head>
@@ -71,7 +77,7 @@
       <div class="navbar-right">
         <p class="navbar-text">Show me the Code, Change the World.</p>
       </div>
-    </div><!--/.nav-collapse -->
+    </div>
   </div>
 </div>
 
@@ -87,7 +93,7 @@
 <br><br><br><br>
 
 <div class="footer">
-  <hr>
+  <div class="hr"><hr></div>
   <div class="container">
     <p class="text-center"><a href="#">{% bootstrap_icon "arrow-up" %}Back to top</a></p>
     <p class="text-muted text-center">Copyright ©2014 All rights reserved. Powered by Silence.</p>

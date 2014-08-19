@@ -16,10 +16,12 @@ class User(models.Model):
 
 class Tag(models.Model):
     tag_name = models.CharField(max_length=20)
+    user = models.ForeignKey(User)
 
 
 class BlogMonth(models.Model):
     month = models.DateTimeField()
+    user = models.ForeignKey(User)
 
 
 class Blog(models.Model):

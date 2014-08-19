@@ -5,24 +5,42 @@
 
 {% block blog_list %}
 <div>
+
   <h2 class="page-header">{{ blog.title }}</h2>
-  <p class="text-right text-muted"> {{ blog.created_time|date:"M. j, Y, H:i:s" }} </p>
-  <div class="popover-content">
-    <p>{{ blog.content|linebreaksbr }}</p><br>
+
+  <div class="row" style="padding-top: 5px;">
+    <!-- categories -->
+    <div class="col-md-9">
+      <div class="text-left">
+        {% for tag in blog.tag.all %}
+          {% if tag.tag_name %}
+            <a href="{% url 'blog:category' username tag.tag_name %}" class="btn btn-sm btn-default">{{ tag.tag_name }}</a>
+          {% endif %}
+        {% endfor %}
+      </div>
+    </div>
+    <!-- created time -->
+    <div class="col-md-3">
+      <div class="text-right">
+        <p class="text-muted"> {{ blog.created_time|date:"M. j, Y, H:i:s" }} </p>
+      </div>
+    </div>
   </div>
+
+  <p style="padding-top: 10px;">{{ blog.content|linebreaksbr }}</p><br>
 
   <div class="row"><br><br></div>
 
-    <div class="row">
-      <div class="pull-right">
-        <div class="btn-group">
-          <a href="{% url 'blog:blog' username %}" class="btn btn-primary" role="button">{% bootstrap_icon "chevron-left" %} Back</a>
-          {% if user_self %}
-            <a href="{% url 'blog:edit' username blog.pk %}" class="btn btn-primary" role="button">{% bootstrap_icon "edit" %} Edit</a>
-          {% endif %}
-        </div>
+  <div class="row">
+    <div class="pull-right">
+      <div class="btn-group">
+        <a href="{% url 'blog:blog' username %}" class="btn btn-primary" role="button">{% bootstrap_icon "chevron-left" %} Back</a>
+        {% if user_self %}
+          <a href="{% url 'blog:edit' username blog.pk %}" class="btn btn-primary" role="button">{% bootstrap_icon "edit" %} Edit</a>
+        {% endif %}
       </div>
-    </div><br><br>
+    </div>
+  </div><br><br>
 
   <div class="row">
     {% if last %}

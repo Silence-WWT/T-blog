@@ -12,25 +12,48 @@
 
   <div class="col-md-3 col-md-offset-1">
 
-    <div class="row">
-      <div class="panel panel-default">
-        <!-- Default panel contents -->
-        <div class="panel-heading"><h3>Archives</h3></div>
-
-        <!-- List group -->
-        <div class="list-group">
-          {% for item in archive_dict_list %}
-            {% if archive_month == item.month %}
-              <p class="list-group-item active">{{ item.month }}<span class="badge">{{ item.num }}</span></p>
-            {% else %}
-              <a href="{% url 'blog:archive' username item.month %}" class="list-group-item">{{ item.month }}
-                <span class="badge">{{ item.num }}</span>
-              </a>
-            {% endif %}
-          {% endfor %}
+    {% if archive_dict_list %}
+      <div class="row">
+        <div class="panel panel-default">
+          <div class="panel-heading"><h3>Archives</h3></div>
+          <div class="list-group">
+            {% for item in archive_dict_list %}
+              {% if archive_month == item.month %}
+                <p class="list-group-item active">{{ item.month }}<span class="badge">{{ item.num }}</span></p>
+              {% else %}
+                <a href="{% url 'blog:archive' username item.month %}" class="list-group-item">{{ item.month }}
+                  <span class="badge">{{ item.num }}</span>
+                </a>
+              {% endif %}
+            {% endfor %}
+          </div>
         </div>
       </div>
-    </div>
+    {% endif %}
+
+    {% if category_dict_list %}
+      <div class="row">
+        <div class="panel panel-default">
+          <div class="panel-heading"><h3>Category</h3></div>
+          <div class="list-group">
+            {% for item in category_dict_list|dictsortreversed:"num" %}
+              {% if item.category_name == category_tag and item.category_name != uncategorized_tag.tag_name %}
+                <p class="list-group-item active">{{ item.category_name }}<span class="badge">{{ item.num }}</span> </p>
+              {% elif item.category_name != uncategorized_tag.tag_name %}
+                <a href="{% url 'blog:category' username item.category_name %}" class="list-group-item">{{ item.category_name }}
+                  <span class="badge">{{ item.num }}</span>
+                </a>
+              {% endif %}
+            {% endfor %}
+            {% if uncategorized_tag %}
+              <a href="{% url 'blog:category' username uncategorized_tag.tag_name %}" class="list-group-item">{{ uncategorized_tag.tag_name }}
+                  <span class="badge">{{ uncategorized_tag.blog_set.count }}</span>
+                </a>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    {% endif %}
 
   </div>
 </div>
