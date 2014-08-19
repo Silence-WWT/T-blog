@@ -8,20 +8,21 @@
 {% block blog_list %}
   {% if user_self %}
     <div class="row">
-      <div class="pull-right" style="padding-top: 80px;">
-        <a href="{% url 'blog:edit' username %}" class="btn btn-primary" role="button">{% bootstrap_icon "plus" %} New blog</a>
-      </div>
+      {% if not archive_month %}
+        <div class="pull-right" style="padding-top: 43px;">
+          <a href="{% url 'blog:edit' username %}" class="btn btn-primary" role="button">{% bootstrap_icon "plus" %} New blog</a>
+        </div>
+      {% endif %}
     </div>
   {% endif %}
   {% for blog in blog_list %}
     <div class="row">
       <div>
-        <h2>
+        <h2 class="page-header">
           <a href="{% url 'blog:view' username blog.pk%}">
             {{ blog.title }}
           </a>
         </h2>
-        <div class="hr"><hr/></div>
         <p class="text-right text-muted"> {{ blog.created_time|date:"M. j, Y, H:i:s" }} </p>
         <p> {{ blog.content|linebreaksbr|truncatechars:"700" }} </p>
       </div><br><br><br>

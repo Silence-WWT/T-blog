@@ -1,4 +1,4 @@
-from django.shortcuts import render_to_response, get_object_or_404
+from django.shortcuts import render_to_response, get_object_or_404, render
 from django.http import HttpResponse, HttpResponseRedirect
 from django.views.decorators.csrf import csrf_exempt
 from datetime import datetime
@@ -82,28 +82,49 @@ def logout(request):
 
 def blog(request, username, page=''):
     user = get_object_or_404(User, username=username)
+    blog_list = list(user.blog_set.all().order_by('created_time').reverse())
+    return pageinate(request, username, blog_list, page)
+
+
+def archive(request, username, time, page=''):
+    user = get_object_or_404(User, username=username)
+    archive_time = datetime(int(time[:4]), int(time[5:]), 1)
+    archive_month = get_object_or_404(BlogMonth, month__exact=archive_time, user__exact=user)
+    blog_list = list(archive_month.blog_set.all().order_by('created_time').reverse())
+    archive_month = archive_month.month.strftime('%Y-%m')
+    return pageinate(request, username, blog_list, page, archive_month)
+
+
+def get_archive_dict_list(user):
+    archive_list = list(user.blogmonth_set.all().order_by('month').reverse())
+    archive_dict_list = []
+    for month in archive_list:
+        archive_dict_list.append({'month': month.month.strftime('%Y-%m'), 'num': month.blog_set.count()})
+    return archive_dict_list
+
+
+def pageinate(request, username, blog_list, page, archive_month=None):
+    user = User.objects.get(username=username)
     if request.session.get('username', '') == username:
         user_self = True
     else:
         user_self = False
-    blog_list = list(user.blog_set.all().order_by('created_time').reverse())
     try:
         page = int(page)
     except TypeError:
         page = 1
     pages = int((len(blog_list) + 10 - 1) / 10)
-    if pages == 0:
-        return render_to_response('blog.html', {'blog_list': blog_list, 'username': username, 'user_self': user_self,
-                                                'pages': pages})
     if page > pages or page < 1:
         return HttpResponseRedirect('/%s/blog/' % username)
-    if pages == 1:
-        return render_to_response('blog.html', {'blog_list': blog_list, 'username': username, 'user_self': user_self,
-                                                'pages': pages})
-    else:
-        return render_to_response('blog.html', {'blog_list': blog_list[(page-1)*10: page*10], 'username': username,
-                                                'user_self': user_self, 'pages': pages, 'page': page,
-                                                'last_page': page-1, 'next_page': page+1, 'range': range(1, pages+1)})
+    context = {'blog_list': blog_list, 'username': username, 'user_self': user_self, 'pages': pages,
+               'archive_dict_list': get_archive_dict_list(user), 'archive_month': archive_month}
+    if pages > 1:
+        context['blog_list'] = blog_list[(page-1)*10: page*10]
+        context['page'] = page
+        context['last_page'] = page - 1
+        context['next_page'] = page + 1
+        context['range'] = range(1, pages + 1)
+    return render_to_response('blog.html', context)
 
 
 def home(request, username):
@@ -128,13 +149,15 @@ def view(request, username, pid):
         user_self = True
     else:
         user_self = False
-    return render_to_response('view.html', {'username': username, 'blog': article, 'user_self': user_self,
-                                            'next': next_article, 'last': last_article})
+    context = {'username': username, 'blog': article, 'user_self': user_self, 'next': next_article,
+               'last': last_article, 'archive_dict_list': get_archive_dict_list(user)}
+    return render_to_response('view.html', context)
 
 
 @csrf_exempt
 def edit(request, username, pid=''):
     if request.session.get('username', '') == username:
+        user = User.objects.get(username=username)
         if request.method == 'POST':
             bf = BlogForm(request.POST)
             if bf.is_valid():
@@ -142,28 +165,27 @@ def edit(request, username, pid=''):
                     if pid:
                         Blog.objects.get(pk=pid).delete()
                     return HttpResponseRedirect('/%s/blog' % username)
-                user = User.objects.get(username=username)
                 title = bf.cleaned_data['title']
                 content = bf.cleaned_data['content']
                 if not pid:
                     article = Blog.objects.create(author=user)
                     created_time = datetime.now()
-                    created_time = datetime(created_time.year, created_time.month, 1)
-                    blog_month = BlogMonth.objects.filter(month__exact=created_time)
+                    created_time = datetime(created_time.year, 6, 1)
+                    blog_month = BlogMonth.objects.filter(month__exact=created_time, user__exact=user)
                     if not blog_month:
-                        month = BlogMonth.objects.create(month=created_time)
+                        month = BlogMonth.objects.create(month=created_time, user=user)
                         article.month = month
                     else:
                         article.month = blog_month[0]
                 else:
-                    article = get_object_or_404(Blog, pk=pid)
+                    article = get_object_or_404(Blog, pk__exact=pid, author__exact=user)
                 article.title = title
                 article.content = content
                 article.save()
                 return HttpResponseRedirect('/%s/view/%s' % (username, article.pk))
         else:
             if pid:
-                article = Blog.objects.filter(pk=pid)
+                article = Blog.objects.filter(pk__exact=pid, author__exact=user)
                 if not blog:
                     return HttpResponse('no such blog!')
                 bf = BlogForm(initial={'title': article[0].title, 'content': article[0].content})
