@@ -42,7 +42,7 @@
           </div>
         </div>
 
-        <p> {{ blog.content|linebreaksbr|truncatechars:"700" }} </p>
+        {{ blog.content|safe|truncatewords_html:150 }}
       </div><br><br>
 
     </div>

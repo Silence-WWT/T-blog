@@ -1,37 +1,171 @@
 {% extends 'base.html' %}
 {% load bootstrap3 %}
+{% load staticfiles %}
 
 {% block title %} Edit {% endblock %}
+
+{% block link_or_script %}
+  <link href="{% static 'bootstrap-wysiwyg/external/google-code-prettify/prettify.css' %}" rel="stylesheet">
+  <link href="http://netdna.bootstrapcdn.com/font-awesome/3.0.2/css/font-awesome.css" rel="stylesheet">
+  <link href="{% static 'bootstrap-wysiwyg/index.css' %}" rel="stylesheet">
+  <script src="{% static 'bootstrap-wysiwyg/external/jquery.hotkeys.js' %}"></script>
+  <script src="{% static 'bootstrap-wysiwyg/external/google-code-prettify/prettify.js' %}"></script>
+  <script src="{% static 'bootstrap-wysiwyg/bootstrap-wysiwyg.js' %}"></script>
+{% endblock %}
 
 {% block nav_blog %} class="active" {% endblock %}
 
 {% block content %}
-    <br>
-<form id="blog_form" class="form" method="post">
-  {% csrf_token %}
-  {% bootstrap_form blog_form %}
-  {% buttons %}
-    <div class="pull-right">
-      <div class="btn-group">
-        <button type="submit" class="btn btn-primary">{% bootstrap_icon "ok" %} Publish</button>
-        {% if blog_id %}
-          <a href="{% url 'blog:view' username blog_id %}" class="btn btn-primary" role="button">{% bootstrap_icon "remove" %} Cancel</a>
-          <button type="button" class="btn btn-primary" onclick="blog_del();">{% bootstrap_icon "trash" %} Delete</button>
-        {% else %}
-          <a href="{% url 'blog:blog' username %}" class="btn btn-primary" role="button">{% bootstrap_icon "remove" %} Cancel</a>
-        {% endif %}
+  <br>
+  <form id="blog_form" class="form" method="post">
+    {% csrf_token %}
+    <div class="form-group">
+      <label class="control-label" for="id_title">{{ blog_form.title.label }}</label>
+      {{ blog_form.title }}
+    </div>
+    <div class="form-group">
+      <label class="control-label" for="id_content">{{ blog_form.content.label }}</label>
+
+      <!-- editor config -->
+      <div class="hero-unit">
+        <div id="alerts"></div>
+        <div class="btn-toolbar" data-role="editor-toolbar" data-target="#editor">
+          <div class="btn-group">
+            <a class="btn dropdown-toggle" data-toggle="dropdown" title="Font"><i class="icon-font"></i><b class="caret"></b></a>
+            <ul class="dropdown-menu"></ul>
+          </div>
+          <div class="btn-group">
+            <a class="btn dropdown-toggle" data-toggle="dropdown" title="Font Size"><i class="icon-text-height"></i>&nbsp;<b class="caret"></b></a>
+            <ul class="dropdown-menu">
+              <li><a data-edit="fontSize 5"><font size="5">Huge</font></a></li>
+              <li><a data-edit="fontSize 3"><font size="3">Normal</font></a></li>
+              <li><a data-edit="fontSize 1"><font size="1">Small</font></a></li>
+            </ul>
+          </div>
+          <div class="btn-group">
+            <a class="btn" data-edit="bold" title="Bold (Ctrl/Cmd+B)"><i class="icon-bold"></i></a>
+            <a class="btn" data-edit="italic" title="Italic (Ctrl/Cmd+I)"><i class="icon-italic"></i></a>
+            <a class="btn" data-edit="strikethrough" title="Strikethrough"><i class="icon-strikethrough"></i></a>
+            <a class="btn" data-edit="underline" title="Underline (Ctrl/Cmd+U)"><i class="icon-underline"></i></a>
+          </div>
+          <div class="btn-group">
+            <a class="btn" data-edit="insertunorderedlist" title="Bullet list"><i class="icon-list-ul"></i></a>
+            <a class="btn" data-edit="insertorderedlist" title="Number list"><i class="icon-list-ol"></i></a>
+            <a class="btn" data-edit="outdent" title="Reduce indent (Shift+Tab)"><i class="icon-indent-left"></i></a>
+            <a class="btn" data-edit="indent" title="Indent (Tab)"><i class="icon-indent-right"></i></a>
+          </div>
+          <div class="btn-group">
+            <a class="btn" data-edit="justifyleft" title="Align Left (Ctrl/Cmd+L)"><i class="icon-align-left"></i></a>
+            <a class="btn" data-edit="justifycenter" title="Center (Ctrl/Cmd+E)"><i class="icon-align-center"></i></a>
+            <a class="btn" data-edit="justifyright" title="Align Right (Ctrl/Cmd+R)"><i class="icon-align-right"></i></a>
+            <a class="btn" data-edit="justifyfull" title="Justify (Ctrl/Cmd+J)"><i class="icon-align-justify"></i></a>
+          </div>
+          <div class="btn-group">
+            <a class="btn dropdown-toggle" data-toggle="dropdown" title="Hyperlink"><i class="icon-link"></i></a>
+            <div class="dropdown-menu input-append">
+              <input class="span2" placeholder="URL" type="text" data-edit="createLink"/>
+              <button class="btn" type="button">Add</button>
+            </div>
+            <a class="btn" data-edit="unlink" title="Remove Hyperlink"><i class="icon-cut"></i></a>
+          </div>
+
+          <div class="btn-group">
+            <a class="btn" title="Insert picture (or just drag & drop)" id="pictureBtn"><i class="icon-picture"></i></a>
+            <input type="file" data-role="magic-overlay" data-target="#pictureBtn" data-edit="insertImage" />
+          </div>
+          <div class="btn-group">
+            <a class="btn" data-edit="undo" title="Undo (Ctrl/Cmd+Z)"><i class="icon-undo"></i></a>
+            <a class="btn" data-edit="redo" title="Redo (Ctrl/Cmd+Y)"><i class="icon-repeat"></i></a>
+          </div>
+          <input type="text" data-edit="inserttext" id="voiceBtn" x-webkit-speech="">
+        </div>
+        <div id="editor">
+          {{ content|safe }}
+        </div>
       </div>
     </div>
-  {% endbuttons %}
-</form>
+
+    <div class="form-group">
+      <label class="control-label" for="id_tag">{{ blog_form.tag.label }}</label>
+      {{ blog_form.tag }}
+      <span class="help-block">{{ blog_form.tag.help_text }}</span>
+      {{ blog_form.delete }}
+      {{ blog_form.content }}
+    </div>
+    {% buttons %}
+      <div class="pull-right">
+        <div class="btn-group">
+          <button type="button" class="btn btn-primary" onclick="blog_submit();">{% bootstrap_icon "ok" %} Publish</button>
+          {% if blog_id %}
+            <a href="{% url 'blog:view' username blog_id %}" class="btn btn-primary" role="button">{% bootstrap_icon "remove" %} Cancel</a>
+            <button type="button" class="btn btn-primary" onclick="blog_del();">{% bootstrap_icon "trash" %} Delete</button>
+          {% else %}
+            <a href="{% url 'blog:blog' username %}" class="btn btn-primary" role="button">{% bootstrap_icon "remove" %} Cancel</a>
+          {% endif %}
+        </div>
+      </div>
+    {% endbuttons %}
+  </form>
+
 {% endblock %}
 
 {% block script %}
-<script type="text/javascript">
-  function blog_del(){
-    var form = document.getElementById('blog_form');
-    form.delete.value = true;
-    form.submit();
+  <script type="text/javascript">
+    function blog_del(){
+      var form = document.getElementById('blog_form');
+      form.delete.value = true;
+      form.submit();
     }
-</script>
+  </script>
+
+  <script type="text/javascript">
+    function blog_submit(){
+      var form=document.getElementById('blog_form');
+      var editor = document.getElementById('editor');
+      form.content.value = $('#editor').html();
+      form.submit();
+    }
+  </script>
+
+  <!-- editor script -->
+  <script>
+    $(function(){
+      function initToolbarBootstrapBindings() {
+        var fonts = ['Serif', 'Sans', 'Arial', 'Arial Black', 'Courier','Courier New', 'Comic Sans MS', 'Helvetica',
+              'Impact', 'Lucida Grande', 'Lucida Sans', 'Tahoma', 'Times','Times New Roman', 'Verdana'],
+            fontTarget = $('[title=Font]').siblings('.dropdown-menu');
+        $.each(fonts, function (idx, fontName) {
+          fontTarget.append($('<li><a data-edit="fontName ' + fontName +'" style="font-family:\''+ fontName +'\'">'+fontName + '</a></li>'));
+        });
+        $('a[title]').tooltip({container:'body'});
+        $('.dropdown-menu input').click(function() {return false;})
+            .change(function () {$(this).parent('.dropdown-menu').siblings('.dropdown-toggle').dropdown('toggle');})
+            .keydown('esc', function () {this.value='';$(this).change();});
+
+        $('[data-role=magic-overlay]').each(function () {
+          var overlay = $(this), target = $(overlay.data('target'));
+          overlay.css('opacity', 0).css('position', 'absolute').offset(target.offset()).width(target.outerWidth()).height(target.outerHeight());
+        });
+        if ("onwebkitspeechchange"  in document.createElement("input")) {
+          var editorOffset = $('#editor').offset();
+          $('#voiceBtn').css('position','absolute').offset({top: editorOffset.top, left: editorOffset.left+$('#editor').innerWidth()-35});
+        } else {
+          $('#voiceBtn').hide();
+        }
+	  };
+	  function showErrorAlert (reason, detail) {
+		  var msg='';
+		  if (reason==='unsupported-file-type') { msg = "Unsupported format " +detail; }
+		  else {
+			  console.log("error uploading file", reason, detail);
+		  }
+		  $('<div class="alert"> <button type="button" class="close" data-dismiss="alert">&times;</button>'+
+		  '<strong>File upload error</strong> '+msg+' </div>').prependTo('#alerts');
+	  };
+      initToolbarBootstrapBindings();
+      $('#editor').wysiwyg({ fileUploadError: showErrorAlert} );
+      window.prettyPrint && prettyPrint();
+    });
+  </script>
+
 {% endblock %}

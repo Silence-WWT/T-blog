@@ -244,6 +244,8 @@ def edit(request, username, pid=''):
                 article.content = content
                 article.save()
                 return HttpResponseRedirect('/%s/view/%s' % (username, article.pk))
+            else:
+                return HttpResponse(bf.cleaned_data)
         else:
             if pid:
                 try:
@@ -251,6 +253,7 @@ def edit(request, username, pid=''):
                 except ObjectDoesNotExist:
                     return Http404
                 init_dict = {'title': article.title, 'content': article.content}
+                content = article.content
                 tag = article.tag.all()
                 if tag:
                     tag_list = []
@@ -261,7 +264,8 @@ def edit(request, username, pid=''):
                 bf = BlogForm(initial=init_dict)
             else:
                 bf = BlogForm()
-            return render_to_response('edit.html', {'blog_form': bf, 'username': username, 'blog_id': pid})
+                content = ''
+            return render_to_response('edit.html', {'blog_form': bf, 'username': username, 'blog_id': pid, 'content': content})
     else:
         return HttpResponseRedirect('/login/')
 
@@ -274,3 +278,7 @@ def comment(request):
 @csrf_exempt
 def upload(request):
     pass
+
+
+def test(request):
+    return render_to_response('test.html', {'username': 'Silence'})

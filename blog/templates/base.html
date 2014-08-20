@@ -6,6 +6,10 @@
   <title>{% block title %}{% endblock %}</title>
   {% load bootstrap3 %}
   <link href="{% bootstrap_css_url %}" rel="stylesheet">
+  <script src="{% bootstrap_jquery_url %}"></script>
+  <script src="{% bootstrap_javascript_url %}"></script>
+  {% block link_or_script %}{% endblock %}
+
   <style type='text/css'>
     html {
       position: relative;
@@ -101,7 +105,5 @@
 </div>
 
 {% block script %}{% endblock %}
-<script src="{% bootstrap_jquery_url %}"></script>
-<script src="{% bootstrap_javascript_url %}"></script>
 </body>
 </html>

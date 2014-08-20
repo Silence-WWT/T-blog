@@ -27,7 +27,9 @@
     </div>
   </div>
 
-  <p style="padding-top: 10px;">{{ blog.content|linebreaksbr }}</p><br>
+  {{ blog.content|safe }}
+
+  <br>
 
   <div class="row"><br><br></div>
 

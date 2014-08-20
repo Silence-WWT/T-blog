@@ -14,8 +14,9 @@ class LoginForm(forms.Form):
 
 
 class BlogForm(forms.Form):
-    title = forms.CharField(widget=forms.TextInput(attrs={'placeholder': 'Title'}))
-    content = forms.CharField(widget=forms.Textarea(attrs={'placeholder': 'Content'}))
-    tag = forms.CharField(widget=forms.TextInput(attrs={'placeholder': 'Tags here'}), required=False,
-                          help_text='multiple tags must separate by a comma')
+    title = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Title'}),
+                            label='Title')
+    content = forms.CharField(widget=forms.HiddenInput, label='Content')
+    tag = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Tags here'}),
+                          required=False, help_text='multiple tags must separate by a comma', label='Tags',)
     delete = forms.BooleanField(required=False, initial=False, widget=forms.HiddenInput)
