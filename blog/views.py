@@ -203,7 +203,7 @@ def edit(request, username, pid=''):
                 if not pid:
                     article = Blog.objects.create(author=user)
                     created_time = datetime.now()
-                    created_time = datetime(created_time.year, 6, 1)
+                    created_time = datetime(created_time.year, created_time.month, 1)
                     blog_month = BlogMonth.objects.filter(month__exact=created_time, user__exact=user)
                     if not blog_month:
                         month = BlogMonth.objects.create(month=created_time, user=user)
@@ -278,7 +278,3 @@ def comment(request):
 @csrf_exempt
 def upload(request):
     pass
-
-
-def test(request):
-    return render_to_response('test.html', {'username': 'Silence'})
