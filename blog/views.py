@@ -265,7 +265,8 @@ def edit(request, username, pid=''):
             else:
                 bf = BlogForm()
                 content = ''
-            return render_to_response('edit.html', {'blog_form': bf, 'username': username, 'blog_id': pid, 'content': content})
+            return render_to_response('edit.html', {'blog_form': bf, 'username': username, 'blog_id': pid,
+                                                    'content': content})
     else:
         return HttpResponseRedirect('/login/')
 

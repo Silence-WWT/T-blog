@@ -16,6 +16,28 @@
 {% block nav_blog %} class="active" {% endblock %}
 
 {% block content %}
+  <!-- a dialog of delete confirm -->
+  <div class="modal fade" id="modal_confirm" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">
+            <span aria-hidden="true">&times;</span>
+            <span class="sr-only">Close</span>
+          </button>
+          <h4 id="modal_header"></h4>
+        </div>
+        <div class="modal-body">
+          <h4 id="modal_body" class="text-center"></h4>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">{% bootstrap_icon 'remove' %} Close</button>
+          <button id="confirm_button" type="button" class="btn btn-primary">{% bootstrap_icon 'ok' %} Confirm</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <br>
   <form id="blog_form" class="form" method="post">
     {% csrf_token %}
@@ -31,11 +53,11 @@
         <div id="alerts"></div>
         <div class="btn-toolbar" data-role="editor-toolbar" data-target="#editor">
           <div class="btn-group">
-            <a class="btn btn-sm btn-primary dropdown-toggle" data-toggle="dropdown" title="Font"><i class="icon-font"></i><b class="caret"></b></a>
+            <a class="btn btn-sm btn-default dropdown-toggle" data-toggle="dropdown" title="Font"><i class="icon-font"></i><b class="caret"></b></a>
             <ul class="dropdown-menu"></ul>
           </div>
           <div class="btn-group">
-            <a class="btn btn-sm btn-primary dropdown-toggle" data-toggle="dropdown" title="Font Size"><i class="icon-text-height"></i>&nbsp;<b class="caret"></b></a>
+            <a class="btn btn-sm btn-default dropdown-toggle" data-toggle="dropdown" title="Font Size"><i class="icon-text-height"></i>&nbsp;<b class="caret"></b></a>
             <ul class="dropdown-menu">
               <li><a data-edit="fontSize 5"><font size="5">Huge</font></a></li>
               <li><a data-edit="fontSize 3"><font size="3">Normal</font></a></li>
@@ -43,39 +65,39 @@
             </ul>
           </div>
           <div class="btn-group">
-            <a class="btn btn-sm btn-primary" data-edit="bold" title="Bold (Ctrl/Cmd+B)"><i class="icon-bold"></i></a>
-            <a class="btn btn-sm btn-primary" data-edit="italic" title="Italic (Ctrl/Cmd+I)"><i class="icon-italic"></i></a>
-            <a class="btn btn-sm btn-primary" data-edit="strikethrough" title="Strikethrough"><i class="icon-strikethrough"></i></a>
-            <a class="btn btn-sm btn-primary" data-edit="underline" title="Underline (Ctrl/Cmd+U)"><i class="icon-underline"></i></a>
+            <a class="btn btn-sm btn-default" data-edit="bold" title="Bold (Ctrl/Cmd+B)"><i class="icon-bold"></i></a>
+            <a class="btn btn-sm btn-default" data-edit="italic" title="Italic (Ctrl/Cmd+I)"><i class="icon-italic"></i></a>
+            <a class="btn btn-sm btn-default" data-edit="strikethrough" title="Strikethrough"><i class="icon-strikethrough"></i></a>
+            <a class="btn btn-sm btn-default" data-edit="underline" title="Underline (Ctrl/Cmd+U)"><i class="icon-underline"></i></a>
           </div>
           <div class="btn-group">
-            <a class="btn btn-sm btn-primary" data-edit="insertunorderedlist" title="Bullet list"><i class="icon-list-ul"></i></a>
-            <a class="btn btn-sm btn-primary" data-edit="insertorderedlist" title="Number list"><i class="icon-list-ol"></i></a>
-            <a class="btn btn-sm btn-primary" data-edit="outdent" title="Reduce indent (Shift+Tab)"><i class="icon-indent-left"></i></a>
-            <a class="btn btn-sm btn-primary" data-edit="indent" title="Indent (Tab)"><i class="icon-indent-right"></i></a>
+            <a class="btn btn-sm btn-default" data-edit="insertunorderedlist" title="Bullet list"><i class="icon-list-ul"></i></a>
+            <a class="btn btn-sm btn-default" data-edit="insertorderedlist" title="Number list"><i class="icon-list-ol"></i></a>
+            <a class="btn btn-sm btn-default" data-edit="outdent" title="Reduce indent (Shift+Tab)"><i class="icon-indent-left"></i></a>
+            <a class="btn btn-sm btn-default" data-edit="indent" title="Indent (Tab)"><i class="icon-indent-right"></i></a>
           </div>
           <div class="btn-group">
-            <a class="btn btn-sm btn-primary" data-edit="justifyleft" title="Align Left (Ctrl/Cmd+L)"><i class="icon-align-left"></i></a>
-            <a class="btn btn-sm btn-primary" data-edit="justifycenter" title="Center (Ctrl/Cmd+E)"><i class="icon-align-center"></i></a>
-            <a class="btn btn-sm btn-primary" data-edit="justifyright" title="Align Right (Ctrl/Cmd+R)"><i class="icon-align-right"></i></a>
-            <a class="btn btn-sm btn-primary" data-edit="justifyfull" title="Justify (Ctrl/Cmd+J)"><i class="icon-align-justify"></i></a>
+            <a class="btn btn-sm btn-default" data-edit="justifyleft" title="Align Left (Ctrl/Cmd+L)"><i class="icon-align-left"></i></a>
+            <a class="btn btn-sm btn-default" data-edit="justifycenter" title="Center (Ctrl/Cmd+E)"><i class="icon-align-center"></i></a>
+            <a class="btn btn-sm btn-default" data-edit="justifyright" title="Align Right (Ctrl/Cmd+R)"><i class="icon-align-right"></i></a>
+            <a class="btn btn-sm btn-default" data-edit="justifyfull" title="Justify (Ctrl/Cmd+J)"><i class="icon-align-justify"></i></a>
           </div>
           <div class="btn-group">
-            <a class="btn btn-sm btn-primary dropdown-toggle" data-toggle="dropdown" title="Hyperlink"><i class="icon-link"></i></a>
+            <a class="btn btn-sm btn-default dropdown-toggle" data-toggle="dropdown" title="Hyperlink"><i class="icon-link"></i></a>
             <div class="dropdown-menu input-append">
               <input class="span2" placeholder="URL" type="text" data-edit="createLink"/>
-              <button class="btn btn-sm btn-primary" type="button">Add</button>
+              <button class="btn btn-sm btn-default" type="button">Add</button>
             </div>
-            <a class="btn btn-sm btn-primary" data-edit="unlink" title="Remove Hyperlink"><i class="icon-cut"></i></a>
+            <a class="btn btn-sm btn-default" data-edit="unlink" title="Remove Hyperlink"><i class="icon-cut"></i></a>
           </div>
 
           <div class="btn-group">
-            <a class="btn btn-sm btn-primary" title="Insert picture (or just drag & drop)" id="pictureBtn"><i class="icon-picture"></i></a>
+            <a class="btn btn-sm btn-default" title="Insert picture (or just drag & drop)" id="pictureBtn"><i class="icon-picture"></i></a>
             <input type="file" data-role="magic-overlay" data-target="#pictureBtn" data-edit="insertImage" />
           </div>
           <div class="btn-group">
-            <a class="btn btn-sm btn-primary" data-edit="undo" title="Undo (Ctrl/Cmd+Z)"><i class="icon-undo"></i></a>
-            <a class="btn btn-sm btn-primary" data-edit="redo" title="Redo (Ctrl/Cmd+Y)"><i class="icon-repeat"></i></a>
+            <a class="btn btn-sm btn-default" data-edit="undo" title="Undo (Ctrl/Cmd+Z)"><i class="icon-undo"></i></a>
+            <a class="btn btn-sm btn-default" data-edit="redo" title="Redo (Ctrl/Cmd+Y)"><i class="icon-repeat"></i></a>
           </div>
           <input type="text" data-edit="inserttext" id="voiceBtn" x-webkit-speech="">
         </div>
@@ -84,7 +106,6 @@
         </div>
       </div>
     </div>
-
     <div class="form-group">
       <label class="control-label" for="id_tag">{{ blog_form.tag.label }}</label>
       {{ blog_form.tag }}
@@ -97,10 +118,10 @@
         <div class="btn-group">
           <button type="button" class="btn btn-primary" onclick="blog_submit();">{% bootstrap_icon "ok" %} Publish</button>
           {% if blog_id %}
-            <a href="{% url 'blog:view' username blog_id %}" class="btn btn-primary" role="button">{% bootstrap_icon "remove" %} Cancel</a>
-            <button type="button" class="btn btn-primary" onclick="blog_del();">{% bootstrap_icon "trash" %} Delete</button>
+            <button type="button" class="btn btn-primary" onclick="cancel_confirm();">{% bootstrap_icon "remove" %} Cancel</button>
+            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modal_confirm" onclick="delete_confirm();">{% bootstrap_icon "trash" %} Delete</button>
           {% else %}
-            <a href="{% url 'blog:blog' username %}" class="btn btn-primary" role="button">{% bootstrap_icon "remove" %} Cancel</a>
+            <button type="button" class="btn btn-primary" onclick="cancel_confirm();">{% bootstrap_icon "remove" %} Cancel</button>
           {% endif %}
         </div>
       </div>
@@ -116,18 +137,48 @@
       form.delete.value = true;
       form.submit();
     }
-  </script>
 
-  <script type="text/javascript">
+    function blog_cancel() {
+      {% if blog_id %}
+        window.location.href = "{% url 'blog:view' username blog_id %}";
+      {% else %}
+        window.location.href = "{% url 'blog:blog' username %}";
+      {% endif %}
+    }
+
     function blog_submit(){
       var form=document.getElementById('blog_form');
       var editor = document.getElementById('editor');
       form.content.value = $('#editor').html();
       form.submit();
     }
+
+    function cancel_confirm() {
+      {% if not blog_id %}
+        if (!$('#editor').cleanHtml()) {
+          blog_cancel();
+          return;
+        }
+      {% else %}
+        if ($('#editor').html().trim() == document.getElementById('blog_form').content.value.trim()) {
+          blog_cancel();
+          return;
+        }
+      {% endif %}
+      document.getElementById('modal_header').innerHTML = "Sure to Cancel?";
+      document.getElementById('modal_body').innerHTML = "If you cancel, you will lose the updated content.";
+      document.getElementById('confirm_button').onclick = blog_cancel;
+      $('#modal_confirm').modal('toggle');
+    }
+
+    function delete_confirm() {
+      document.getElementById('modal_header').innerHTML = "Sure to Delete?";
+      document.getElementById('modal_body').innerHTML = "If you delete it, you will lose this post.";
+      document.getElementById('confirm_button').onclick = blog_del;
+    }
   </script>
 
-  <!-- editor script -->
+  <!-- editor config script -->
   <script>
     $(function(){
       function initToolbarBootstrapBindings() {
