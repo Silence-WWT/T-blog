@@ -212,10 +212,9 @@ def edit(request, username, pid=''):
                         article.month = blog_month[0]
                 else:
                     article = get_object_or_404(Blog, pk__exact=pid, author__exact=user)
-                tag = bf.cleaned_data['tag'].split(',')
+                tag = re.sub(' ', '', bf.cleaned_data['tag']).split(',')
                 tag_list = []
                 for item in tag:
-                    item = re.sub(' ', '', item.strip())
                     if item:
                         tag_list.append(item)
                 article_tag_list = list(article.tag.all())
